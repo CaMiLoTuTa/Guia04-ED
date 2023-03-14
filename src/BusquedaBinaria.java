@@ -1,6 +1,10 @@
 import java.util.Random;
-
 import javax.swing.JOptionPane;
+
+/**
+ *
+ * @author tutaa
+ */
 
 public class BusquedaBinaria {
 
@@ -10,6 +14,14 @@ public class BusquedaBinaria {
     // ? 10000 y 100000 (recuerde que los arreglos deben estar ordenados). Tome los
     // ? tiempos en cada caso y realice una gráfica.
 
+    public static void main(String[] args) {
+        new BusquedaBinaria();
+    }
+
+    int nEl, arreglo[], num, cont;
+
+    Random random = new Random();
+
     public BusquedaBinaria() {
         // búsqueda binaria: El arreglo debe estar ordenado, divide en dos arreglos y
         // verifica en cual es mayor...
@@ -18,7 +30,8 @@ public class BusquedaBinaria {
         ordenandoArreglo();
         // imprimiendoArreglo();
 
-        int elemento = Integer.parseInt(JOptionPane.showInputDialog("Número a buscar en el arreglo: "));
+        int elemento = Integer
+                .parseInt(JOptionPane.showInputDialog(null, "Número a buscar en el arreglo: ", "BUSCAR", 3));
         long startTime = System.currentTimeMillis();
         int pos = buscarEnArreglo(elemento);
         if (pos != -1) {
@@ -29,15 +42,13 @@ public class BusquedaBinaria {
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
         JOptionPane.showMessageDialog(null,
-                "El tiempo total de la búsqueda binaria es: " + totalTime + " mili-segundos.");
+                "El tiempo total de la búsqueda binaria es: " + totalTime + " mili-segundos.", "TIEMPO DE EJECUCIÓN",
+                1);
     }
 
-    int nEl, arreglo[], num, cont;
-
-    Random random = new Random();
-
     public void llenarArreglo() {
-        nEl = Integer.parseInt(JOptionPane.showInputDialog("Escriba el número de datos que desea agregar: "));
+        nEl = Integer.parseInt(JOptionPane.showInputDialog(null, "Escriba el número de datos que desea agregar: ",
+                "NÚMERO DE DATOS", 3));
         arreglo = new int[nEl];
 
         for (int i = 0; i < arreglo.length; i++) {
@@ -74,9 +85,7 @@ public class BusquedaBinaria {
                 primero = centro + 1;
             }
         }
-
         return -1;
-
     }
 
     public void imprimiendoArreglo() {
@@ -91,10 +100,6 @@ public class BusquedaBinaria {
                 text += i + "   ";
             }
         }
-        JOptionPane.showMessageDialog(null, text);
-    }
-
-    public static void main(String[] args) {
-        new BusquedaBinaria();
+        JOptionPane.showMessageDialog(null, text, "DATOS", 1);
     }
 }
