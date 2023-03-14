@@ -1,3 +1,7 @@
+import java.util.Random;
+
+import javax.swing.JOptionPane;
+
 public class BusquedaBinaria {
 
     // ? Elabore un programa en lenguaje de programación Java que permita realizar
@@ -9,6 +13,85 @@ public class BusquedaBinaria {
     public BusquedaBinaria() {
         // búsqueda binaria: El arreglo debe estar ordenado, divide en dos arreglos y
         // verifica en cual es mayor...
+
+        llenarArreglo();
+        ordenandoArreglo();
+        // imprimiendoArreglo();
+
+        int elemento = Integer.parseInt(JOptionPane.showInputDialog("Número a buscar en el arreglo: "));
+        long startTime = System.currentTimeMillis();
+        int pos = buscarEnArreglo(elemento);
+        if (pos != -1) {
+            System.out.println("Elemento " + elemento + " encontrado en la posición " + pos);
+        } else {
+            System.out.println("Elemento " + elemento + " no encontrado");
+        }
+        long endTime = System.currentTimeMillis();
+        long totalTime = endTime - startTime;
+        JOptionPane.showMessageDialog(null,
+                "El tiempo total de la búsqueda binaria es: " + totalTime + " mili-segundos.");
+    }
+
+    int nEl, arreglo[], num, cont;
+
+    Random random = new Random();
+
+    public void llenarArreglo() {
+        nEl = Integer.parseInt(JOptionPane.showInputDialog("Escriba el número de datos que desea agregar: "));
+        arreglo = new int[nEl];
+
+        for (int i = 0; i < arreglo.length; i++) {
+            num = random.nextInt(nEl);
+            arreglo[i] = num;
+        }
+    }
+
+    public void ordenandoArreglo() {
+        for (int i = nEl / 2; i > 0; i /= 2) {
+            for (int j = i; j < nEl; j += 1) {
+                int temp = arreglo[j];
+                int k;
+                for (k = j; k >= i && arreglo[k - i] > temp; k -= i) {
+                    arreglo[k] = arreglo[k - i];
+                }
+                arreglo[k] = temp;
+            }
+        }
+    }
+
+    public int buscarEnArreglo(int elemento) {
+        int centro, primero, ultimo, valorCentro;
+        primero = 0;
+        ultimo = nEl - 1;
+        while (primero <= ultimo) {
+            centro = (primero + ultimo) / 2;
+            valorCentro = arreglo[centro];
+            if (elemento == valorCentro) {
+                return centro;
+            } else if (elemento < valorCentro) {
+                ultimo = centro - 1;
+            } else {
+                primero = centro + 1;
+            }
+        }
+
+        return -1;
+
+    }
+
+    public void imprimiendoArreglo() {
+        String text = "";
+        for (int i : arreglo) {
+            cont++;
+            if (cont == 20) {
+                text += i + "\n";
+                cont = 0;
+
+            } else {
+                text += i + "   ";
+            }
+        }
+        JOptionPane.showMessageDialog(null, text);
     }
 
     public static void main(String[] args) {

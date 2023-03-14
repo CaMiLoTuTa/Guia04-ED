@@ -1,3 +1,8 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.swing.JOptionPane;
@@ -11,72 +16,122 @@ import javax.swing.JOptionPane;
 // ? estará en correspondencia con éste conteniendo el sueldo de cada uno.
 
 public class EmpresaABC {
-    int nEmp = 100, aux;
-    int[] ruts = new int[nEmp];
-    int[] sueldos = new int[nEmp];
-    int rutI = 448;
-    String text = "";
-    Random random = new Random();
 
     public EmpresaABC() {
         rellenar();
-        metodoBurbuja();
-        imprimirArreglo();
+        imprimirArreglo(sueldos);
+        ordenar();
+        masBonificacion();
         empleadoMasBonificacion();
         empleadoMenosBonificacion();
         busquedaEmpleado();
-
+        gastosTotales();
     }
+
+    int nEmp, aux, rutI = 448, cont, rutEmpMasBon, rutEmpMenosBon;
+    Double bonTotal = 0.0, bonEmpMin = 0.0, bonEmpMax = 10_000_000.0;
+
+    Map<Integer, Double> sueldos = new HashMap<>();
+    Map<Integer, Double> sueldosOrdenados = new LinkedHashMap<>();
+    Map<Integer, Double> primerosTreinta = new LinkedHashMap<>();
+
+    Random random = new Random();
 
     public void rellenar() {
-        for (int i = 0; i < 100; i++) {
-            ruts[i] = rutI;
-            sueldos[i] = ((int) (Math.random() * 1_000_000));
-            rutI += 2;
+        nEmp = Integer.parseInt(JOptionPane.showInputDialog("¿Cuántos empleados desea agregar? "));
+        for (int i = 0; i < nEmp; i++) {
+            sueldos.put((rutI += 2), (double) random.nextInt(1_000_000, 10_000_000));
         }
     }
 
-    public void metodoBurbuja() {
-        // ? MÉTODO BURBUJA
-        for (int i = 0; i < (nEmp - 1); i++) {
-            for (int j = 0; j < (nEmp - 1); j++) {
-                if (sueldos[j] > sueldos[j + 1]) {
-                    aux = sueldos[j];
-                    sueldos[j] = sueldos[j + 1];
-                    sueldos[j + 1] = aux;
-                }
-            }
+    public void ordenar() {
+        List<Map.Entry<Integer, Double>> list = new ArrayList<>(sueldos.entrySet());
+
+        list.sort(Map.Entry.comparingByValue());
+
+        for (Map.Entry<Integer, Double> i : list) {
+            sueldosOrdenados.put(i.getKey(), i.getValue());
         }
+        imprimirArreglo(sueldosOrdenados);
     }
 
-    public void imprimirArreglo() {
+    public void imprimirArreglo(Map<Integer, Double> diccionario) {
+        cont = 0;
         String text = "";
-        for (int i = 0; i < sueldos.length; i++) {
-            if ((nEmp - 1) == i) {
-                text += sueldos[i] + ".";
+        for (int i : diccionario.keySet()) {
+            cont++;
+            if (cont == (nEmp / 10)) {
+                text += (i + ": $" + diccionario.get(i)) + "\n";
+                cont = 0;
             } else {
-                text += sueldos[i] + ", ";
+                text += (i + ": $" + diccionario.get(i)) + ",   ";
             }
         }
-        JOptionPane.showMessageDialog(null, "El arreglo es: \n" + text);
-
+        JOptionPane.showMessageDialog(null, text);
     }
 
-    // ! Implemente funciones que permitan:
+    public void masBonificacion() {
+        int rut;
+        Double sueldoBonificacion;
+        cont = 0;
+
+        for (int i : sueldosOrdenados.keySet()) {
+            cont++;
+            rut = i;
+            sueldoBonificacion = (sueldosOrdenados.get(i) + (sueldosOrdenados.get(i) * 0.05));
+
+            bonTotal += (sueldosOrdenados.get(i) * 0.05);
+
+            if ((sueldosOrdenados.get(i) * 0.05) > bonEmpMin) {
+                rutEmpMasBon = i;
+                bonEmpMin = (sueldosOrdenados.get(i) * 0.05);
+            }
+            if ((sueldosOrdenados.get(i) * 0.05) < bonEmpMax) {
+                rutEmpMenosBon = i;
+                bonEmpMax = (sueldosOrdenados.get(i) * 0.05);
+            }
+            primerosTreinta.put(rut, sueldoBonificacion);
+
+            if (cont == (nEmp * 0.3)) {
+                break;
+            }
+        }
+        imprimirArreglo(primerosTreinta);
+    }
 
     // ? Encontrar el empleado con la mayor bonificación,
-    private void empleadoMasBonificacion() {
-
+    public void empleadoMasBonificacion() {
+        JOptionPane.showMessageDialog(null,
+                "El empleado con más bonificación es: " + rutEmpMasBon + " con: +$" + bonEmpMin);
     }
 
     // ? Encontrar el empleado con la menor bonificación,
-    private void empleadoMenosBonificacion() {
-
+    public void empleadoMenosBonificacion() {
+        JOptionPane.showMessageDialog(null,
+                "El empleado con menos bonificación es: " + rutEmpMenosBon + " con: +$" + bonEmpMax);
     }
 
     // ? Encontrar un empleado a partir de su RUT
-    private void busquedaEmpleado() {
+    public void busquedaEmpleado() {
+        for (;;) {
+            String buscarRut = JOptionPane.showInputDialog("Escriba el RUT del empleado o \"salir\"");
 
+            if (buscarRut.equals("salir")) {
+                break;
+
+            } else {
+                Double buscarSueldo = sueldosOrdenados.get(Integer.parseInt(buscarRut));
+
+                JOptionPane.showMessageDialog(null,
+                        "El empleado con el RUT: " + buscarRut + "\nTiene un sueldo de: $" + buscarSueldo);
+            }
+        }
+    }
+
+    // ? Encontrar cuánto se gasta la empresa finalmente
+    public void gastosTotales() {
+        JOptionPane.showMessageDialog(null,
+                "La empresa gasta un total de: $" + bonTotal);
     }
 
     public static void main(String[] args) {
